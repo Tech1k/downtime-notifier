@@ -42,7 +42,8 @@ func init() {
 		log.Println(err)
 		return
 	}
-	config.CheckFrequency = time.Duration(int(config.CheckFrequency * time.Second))
+	config.CheckFrequency = time.Duration(
+		int(config.CheckFrequency * time.Second))
 	pool = make(chan Worker, parallelWorkers)
 	for i := 0; i < parallelWorkers; i++ {
 		pool <- Worker{}

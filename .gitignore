@@ -1,3 +1,10 @@
+# Swap files
+*~
+*.swp
+*.swo
+
 config.json
+
+# Main binary file
 main
 
