@@ -13,17 +13,20 @@ import (
 )
 
 type Config struct {
-	BotToken         string        `json:"telegramBotToken"`
-	NotifiableChatID int64         `json:"notifiableChatID"`
-	CheckFrequency   time.Duration `json:"checkFrequency"`
-	URLs             []string      `json:"urls"`
+	BotToken       string        `json:"telegramBotToken"`
+	CheckFrequency time.Duration `json:"checkFrequency"`
+	URLs           []string      `json:"urls"`
 }
 
-var config Config
-var parallelWorkers = 4
-var pool chan Worker
-var botMutex *sync.Mutex
-var bot *tgbotapi.BotAPI
+var (
+	config           Config
+	parallelWorkers  = 4
+	pool             chan Worker
+	botMutex         *sync.Mutex
+	bot              *tgbotapi.BotAPI
+	messageReceived        = false
+	notifiableChatID int64 = 0
+)
 
 func init() {
 	runtime.GOMAXPROCS(parallelWorkers)
@@ -56,6 +59,33 @@ func init() {
 	}
 	bot.Debug = false
 	fmt.Printf("Authorized as %s\n", bot.Self.UserName)
+	go func() {
+		u := tgbotapi.NewUpdate(0)
+		u.Timeout = 60
+
+		updates, err := bot.GetUpdatesChan(u)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		update := <-updates
+
+		botMutex.Lock()
+		messageReceived = true
+		notifiableChatID = update.Message.Chat.ID
+		botMutex.Unlock()
+
+		log.Printf(
+			"Sending reports to chat %d\n",
+			notifiableChatID,
+		)
+
+		msg := tgbotapi.NewMessage(
+			update.Message.Chat.ID, "Chat registered")
+		bot.Send(msg)
+	}()
 }
 
 func main() {
@@ -72,6 +102,12 @@ func main() {
 func sendMsg(message string) {
 	botMutex.Lock()
 	defer botMutex.Unlock()
-	msg := tgbotapi.NewMessage(config.NotifiableChatID, message)
+	if !messageReceived {
+		log.Println(
+			"Write a message to the bot for specifying notifiable chat ID",
+		)
+		return
+	}
+	msg := tgbotapi.NewMessage(notifiableChatID, message)
 	bot.Send(msg)
 }

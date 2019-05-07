@@ -21,6 +21,9 @@ errors via telegram bot.
 * Fill all `config.json` fields with correct info(telegram api token, etc.)
 * Specify URL's to check in config file
 * Run previously compiled binary file(`main`)
+* After launching write message to bot, token of which you have specified.
+After that, bot will memorize chat id and send reports to this chat.
+Procedure of memorizing chat id must be repeated on every relaunch.
 
 Note: `checkFrequency` config parameter must be specified in seconds.
 

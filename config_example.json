@@ -1,6 +1,5 @@
 {
 	"telegramBotToken":"bot api token",
-	"notifiableChatID":0,
 	"checkFrequency":60,
 	"urls":[
 			"http://example.com"
