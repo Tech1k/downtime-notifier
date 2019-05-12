@@ -98,8 +98,8 @@ func main() {
 	}
 }
 
-//sendMsg sends message by bot to id specified in config
-func sendMsg(message string) {
+//SendMsg sends message by bot to id specified in config
+func SendMsg(message string) {
 	botMutex.Lock()
 	defer botMutex.Unlock()
 	if !messageReceived {
@@ -108,6 +108,10 @@ func sendMsg(message string) {
 		)
 		return
 	}
+	log.Println("message norm")
 	msg := tgbotapi.NewMessage(notifiableChatID, message)
-	bot.Send(msg)
+	_, err := bot.Send(msg)
+	if err != nil {
+		log.Println(err)
+	}
 }

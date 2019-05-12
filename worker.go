@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -23,15 +22,14 @@ func (w Worker) CheckURL(url string, pool chan<- Worker) {
 	defer func() {
 		pool <- w
 	}()
-	log.Println(url)
 	resp, err := http.Get(url)
 	if err != nil {
 		msg := fmt.Sprintf("URL %s returns error:\n%s", url, err.Error())
-		sendMsg(msg)
+		go SendMsg(msg)
 		return
 	}
 	if resp.StatusCode != 200 {
 		msg := fmt.Sprintf("URL %s returns http code %d", url, resp.StatusCode)
-		sendMsg(msg)
+		go SendMsg(msg)
 	}
 }

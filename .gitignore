@@ -4,6 +4,7 @@
 *.swo
 
 config.json
+coverage.out
 
 # Main binary file
 main
