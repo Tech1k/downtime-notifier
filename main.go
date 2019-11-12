@@ -108,7 +108,6 @@ func SendMsg(message string) {
 		)
 		return
 	}
-	log.Println("message norm")
 	msg := tgbotapi.NewMessage(notifiableChatID, message)
 	_, err := bot.Send(msg)
 	if err != nil {
